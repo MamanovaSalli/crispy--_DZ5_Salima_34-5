@@ -1,11 +1,12 @@
- import './App.css';
+ import './index.css';
 
-import MainPage from "./pages/mainPage/MainPage";
+// import MainPage from "./pages/mainPage/MainPage";
+ import UserCard from "./pages/userCard/UserCard";
 
 function App() {
   return (
     <>
-      <MainPage/>
+      <UserCard/>
     </>
   );
 }

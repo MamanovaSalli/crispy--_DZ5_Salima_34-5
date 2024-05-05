@@ -1,34 +1,45 @@
+import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
 
-import { createSlice } from '@reduxjs/toolkit';
+export const getUsers = createAsyncThunk(
+    'getUsers',
+    async function (info, {dispatch}) {
+        try {
+            dispatch(preloaderOn())
+            const response = await fetch('https://jsonplaceholder.typicode.com/users')
 
-export const PostsSlice = createSlice({
-  name: 'auth',
-  initialState: {
-    isAuthenticated: false,
-    user: null,
-    error: null,
-  },
-  reducers: {
-    loginSuccess: (state, action) => {
-      state.isAuthenticated = true;
-      state.user = action.payload;
-      state.error = null;
+            if (response.status >= 200 || response.status <= 204) {
+                const users = await response.json()
+                dispatch(getPostsInfo(users))
+
+            }
+        } catch (e) {
+            throw e
+        } finally {
+            dispatch(preloaderOff)
+        }
+
+    }
+)
+const usersSlice = createSlice({
+    name: 'usersSlice',
+    initialState: {
+        title: '',
+        users: [],
+        preloader: false
     },
-    loginFailure: (state, action) => {
-      state.isAuthenticated = false;
-      state.user = null;
-      state.error = action.payload;
-    },
-    logout: (state) => {
-      state.isAuthenticated = false;
-      state.user = null;
-      state.error = null;
-    },
-  },
-});
+    reducers: {
+        getPostsInfo: (state, action) => {
+            state.users = action.payload
+        },
+        preloaderOff: (state, action) => {
+            state.preloader = false
+        },
+        preloaderOn: (state, action) => {
+            state.preloader = true
+        },
+    }
+})
 
-export const { loginSuccess, loginFailure, logout } = PostsSlice.actions;
+export const { getPostsInfo, preloaderOff, preloaderOn} = usersSlice.actions
 
-export default PostsSlice.reducer;
-
-// authSlice - имя вашего файла, может быть другим
+export default usersSlice.reducer
